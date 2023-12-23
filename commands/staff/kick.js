@@ -22,7 +22,8 @@ module.exports = {
 		.addStringOption((option) =>
 			option
 				.setName('razón')
-				.setDescription('Razón de la expulsión.'),
+				.setDescription('Razón de la expulsión.')
+				.setRequired(false),
 		),
 	/**
    * @param {ChatInputCommandInteraction} interaction

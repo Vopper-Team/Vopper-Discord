@@ -25,7 +25,10 @@ module.exports = {
 				.setRequired(true),
 		)
 		.addStringOption((option) =>
-			option.setName('razón').setDescription('Razón del baneo.'),
+			option
+				.setName('razón')
+				.setDescription('Razón del baneo.')
+				.setRequired(false),
 		),
 
 	/**

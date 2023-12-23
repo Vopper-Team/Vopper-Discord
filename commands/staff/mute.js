@@ -20,9 +20,12 @@ module.exports = {
 				.setDescription('El usuario que quieras mutear.')
 				.setRequired(true),
 		)
-		.addStringOption((op) =>
-			op.setName('razón').setDescription('Razón de la expulsión.'),
-		).setRequired(false),
+		.addStringOption((option) =>
+			option
+				.setName('razón')
+				.setDescription('Razón de la expulsión.')
+				.setRequired(false),
+		),
 	/**
    * @param {ChatInputCommandInteraction} interaction
    */
