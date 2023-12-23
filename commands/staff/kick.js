@@ -66,11 +66,14 @@ module.exports = {
 					content: `${userKick.tag} ha sido expulsado!`,
 				});
 			}
-			await memberToKick.kick(reasonKick);
-			await interaction.reply({ content: `${userKick.tag} ha sido expulsado!` });
+			else {
+				await memberToKick.kick(reasonKick);
+				await interaction.reply({ content: `${userKick.tag} ha sido expulsado!` });
+			}
+
 		}
 		catch (error) {
-			return await interaction.reply({
+			await interaction.reply({
 				content: `${error.message}`,
 				ephemeral: true,
 			});
