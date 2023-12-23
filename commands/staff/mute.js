@@ -4,13 +4,11 @@ const {
 	// eslint-disable-next-line no-unused-vars
 	ChatInputCommandInteraction,
 	PermissionFlagsBits,
+
 } = require('discord.js');
 
 const path = require('path');
-const buildMessage = require(path.join(
-	process.cwd(),
-	'utils/customMessages/messageInfo.js',
-));
+const { messageInfo, messageError, messagePermission, messageSuccess } = require(path.join(process.cwd(), '/utils/customMessages.js'));
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -24,7 +22,7 @@ module.exports = {
 		)
 		.addStringOption((op) =>
 			op.setName('razón').setDescription('Razón de la expulsión.'),
-		),
+		).setRequired(false),
 	/**
    * @param {ChatInputCommandInteraction} interaction
    */
@@ -32,13 +30,17 @@ module.exports = {
 		const userMute = interaction.options.getUser('usuario');
 		const reasonMute = interaction.options.getString('razón');
 		const member = interaction.guild.members.cache.get(interaction.user.id);
-		const muteRole = interaction.guild.roles.cache.find(
-			(role) => role.id === '1187549277392732202',
-		);
+		const muteRole = interaction.guild.roles.cache.find((role) => role.id === '1187549277392732202');
+		// Obtener el miembro del servidor que se va a expulsar
+		const memberToMute = interaction.guild.members.cache.get(userMute.id);
+		// Canal de log
+		const canalDestinoId = '1187903184207880333';
+		const canalDestino = interaction.guild.channels.cache.get(canalDestinoId);
+
 		// Verificar permisos para mute a usuarios
 		if (!member.permissions.has(PermissionFlagsBits.ManageRoles)) {
 			return await interaction.reply({
-				content: 'No tienes permisos para utilizar este comando!',
+				embeds: [messagePermission('No tienes permisos!', 'No tienes permisos para utilizar este comando!')],
 				ephemeral: true,
 			});
 		}
@@ -46,40 +48,39 @@ module.exports = {
 		// Verificar si se proporcionó un usuario a expulsar
 		if (!userMute) {
 			return await interaction.reply({
-				content: 'Debes mencionar al usuario que quieres mutear.',
+				embeds: [messageInfo('Te falta algo!', 'Debes mencionar al usuario que quieres mutear.')],
 				ephemeral: true,
 			});
 		}
-
-		// Obtener el miembro del servidor que se va a expulsar
-		const memberToMute = interaction.guild.members.cache.get(userMute.id);
 
 		// Verificar si el usuario tiene permisos para ser expulsado
-		if (
-			!memberToMute ||
-      memberToMute.permissions.has(PermissionFlagsBits.ManageRoles)
-		) {
+		if (!memberToMute || memberToMute.permissions.has(PermissionFlagsBits.ManageRoles)) {
 			return await interaction.reply({
-				content: 'No puedes mutear a este usuario.',
+				embeds: [messageError('ERROR!', 'No puedes mutear a este usuario.')],
 				ephemeral: true,
 			});
 		}
 
-		// Mutear al usuario
+		// Mutear al usuario temporalmente
 		try {
 			if (!reasonMute) {
 				await memberToMute.roles.add(muteRole);
-				await interaction.reply({ content: `Se ha muteado el usuario ${userMute.tag}` });
-				const canalDestinoId = '1187903184207880333';
-				// Obten el canal de destino
-				const canalDestino = interaction.guild.channels.cache.get(canalDestinoId);
+				await interaction.reply({ embeds: [messageSuccess('Haz muteado a un usuario', `Se ha muteado al usuario ${userMute.tag}.`)], ephemeral: true });
 				if (canalDestino) {
-
-					const embedObject = buildMessage('¡Se ha muteado un usuario!', `${userMute.tag} ha sido muteado! por ${interaction.member.displayName}`);
-					const embed = embedObject.embed;
-
 					// Envía el mensaje al canal de destino
-					await canalDestino.send({ embeds: [embed], files: embedObject.files });
+					await canalDestino.send({ embeds: [messageInfo('¡Se ha muteado a un usuario!', `${userMute.tag} ha sido muteado por ${interaction.member.displayName()}.`)] });
+				}
+				else {
+					console.error('No se pudo encontrar el canal de destino.');
+				}
+			}
+			else {
+				await memberToMute.roles.add(muteRole);
+				await interaction.reply({ embeds: [messageSuccess('Haz muteado a un usuario', `Se ha muteado el usuario ${userMute.tag}. \nRazón: **${reasonMute}**.`)], ephemeral: true });
+
+				if (canalDestino) {
+					// Envía el mensaje al canal de destino
+					await canalDestino.send({ embeds: [messageInfo('¡Se ha muteado un usuario!', `${userMute.tag} ha sido muteado por ${interaction.member.displayName}. \nRazón: **${reasonMute}**`)] });
 				}
 				else {
 					console.error('No se pudo encontrar el canal de destino.');
@@ -88,8 +89,8 @@ module.exports = {
 		}
 		catch (error) {
 			console.log(error);
-			return await interaction.reply({
-				content: `${error}`,
+			await interaction.reply({
+				embeds: [messageError('Hubo un error al mutear!', `${error}`)],
 				ephemeral: true,
 			});
 		}

@@ -5,7 +5,9 @@ const {
 	ChatInputCommandInteraction,
 	PermissionFlagsBits,
 } = require('discord.js');
-const ms = require('ms');
+
+const path = require('path');
+const { messageInfo, messageError, messagePermission, messageSuccess } = require(path.join(process.cwd(), '/utils/customMessages.js'));
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -17,8 +19,10 @@ module.exports = {
 				.setDescription('El usuario que quieras expulsar.')
 				.setRequired(true),
 		)
-		.addStringOption((op) =>
-			op.setName('razón').setDescription('Razón de la expulsión.'),
+		.addStringOption((option) =>
+			option
+				.setName('razón')
+				.setDescription('Razón de la expulsión.'),
 		),
 	/**
    * @param {ChatInputCommandInteraction} interaction
@@ -28,10 +32,16 @@ module.exports = {
 		const reasonKick = interaction.options.getString('razón');
 		const member = interaction.guild.members.cache.get(interaction.user.id);
 
+		// Obtener el miembro del servidor que se va a expulsar
+		const memberToKick = interaction.guild.members.cache.get(userKick.id);
+
+		// Canal de log
+		const canalDestinoId = '1187903184207880333';
+		const canalDestino = interaction.guild.channels.cache.get(canalDestinoId);
 		// Verificar permisos para expulsar a usuarios
 		if (!member.permissions.has(PermissionFlagsBits.KickMembers)) {
 			return await interaction.reply({
-				content: 'No tienes permisos para utilizar este comando!',
+				embeds: [messagePermission('No tienes permisos!', 'No tienes permisos para utilizar este comando!')],
 				ephemeral: true,
 			});
 		}
@@ -39,21 +49,15 @@ module.exports = {
 		// Verificar si se proporcionó un usuario a expulsar
 		if (!userKick) {
 			return await interaction.reply({
-				content: 'Debes mencionar al usuario que quieres expulsar.',
+				embeds: [messageInfo('Te falta algo!', 'Debes mencionar al usuario que quieres expulsar.')],
 				ephemeral: true,
 			});
 		}
 
-		// Obtener el miembro del servidor que se va a expulsar
-		const memberToKick = interaction.guild.members.cache.get(userKick.id);
-
 		// Verificar si el usuario tiene permisos para ser expulsado
-		if (
-			!memberToKick ||
-      memberToKick.permissions.has(PermissionFlagsBits.KickMembers)
-		) {
+		if (!memberToKick || memberToKick.permissions.has(PermissionFlagsBits.KickMembers)) {
 			return await interaction.reply({
-				content: 'No puedes expulsar a este usuario.',
+				embeds: [messageError('ERROR!', 'No puedes expulsar a este usuario.')],
 				ephemeral: true,
 			});
 		}
@@ -62,18 +66,29 @@ module.exports = {
 		try {
 			if (!reasonKick) {
 				await memberToKick.kick();
-				await interaction.reply({
-					content: `${userKick.tag} ha sido expulsado!`,
-				});
+				await interaction.reply({ embeds: [messageSuccess('Haz expulsado a un usuario', `Se ha expulsado al usuario ${userKick.tag}`)], ephemeral: true });
+				if (canalDestino) {
+					// Envía el mensaje al canal de destino
+					await canalDestino.send({ embeds: [messageInfo('¡Se ha expulsado un usuario!', `${userKick.tag} ha sido baneado por ${interaction.member.displayName}`)] });
+				}
+				else {
+					console.error('No se pudo encontrar el canal de destino.');
+				}
 			}
 			else {
-				await memberToKick.kick(reasonKick);
-				await interaction.reply({ content: `${userKick.tag} ha sido expulsado!` });
+				await memberToKick.kick({ reason: reasonKick });
+				await interaction.reply({ embeds: [messageSuccess('Haz expulsado a un usuario', `Se ha expulsado el usuario ${userKick.tag}\nRazón: **${reasonKick}**`)], ephemeral: true });
+				if (canalDestino) {
+					// Envía el mensaje al canal de destino
+					await canalDestino.send({ embeds: [messageInfo('¡Se ha expulsado un usuario!', `${userKick.tag} ha sido baneado por ${interaction.member.displayName}\nRazón: **${reasonKick}**`)] });
+				}
+				else {
+					console.error('No se pudo encontrar el canal de destino.');
+				}
 			}
-
 		}
 		catch (error) {
-			await interaction.reply({
+			return await interaction.reply({
 				content: `${error.message}`,
 				ephemeral: true,
 			});
