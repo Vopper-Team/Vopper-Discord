@@ -7,6 +7,10 @@ const {
 } = require('discord.js');
 const ms = require('ms');
 
+function daysToSeconds(day) {
+	return day * 24 * 60 * 60;
+}
+
 module.exports = {
 	Cooldown: ms('1m'),
 	data: new SlashCommandBuilder()
@@ -20,6 +24,21 @@ module.exports = {
 		)
 		.addStringOption((option) =>
 			option.setName('razón').setDescription('Razón del baneo.'),
+		)
+		.addNumberOption((option) =>
+			option
+				.setName('duración')
+				.setDescription('Selecciona el día de mensajes a borrar.')
+				.addChoices(
+					{ name: '0 día', value: 0 },
+					{ name: '1 día', value: daysToSeconds(1) },
+					{ name: '2 días', value: daysToSeconds(2) },
+					{ name: '3 días', value: daysToSeconds(3) },
+					{ name: '4 días', value: daysToSeconds(4) },
+					{ name: '5 días', value: daysToSeconds(5) },
+					{ name: '6 días', value: daysToSeconds(6) },
+					{ name: '7 días', value: daysToSeconds(7) },
+				).setRequired(false),
 		),
 	/**
    * @param {ChatInputCommandInteraction} interaction

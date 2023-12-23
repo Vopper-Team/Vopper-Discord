@@ -100,9 +100,9 @@ module.exports = {
    */
 	async execute(member) {
 		if (!member.user) return;
-		if (member.guild.channels.cache.has('1187483651647221849')) {
+		if (member.guild.channels.cache.has('1187920201732333590')) {
 			const welcomeChannel = member.guild.channels.cache.get(
-				'1187483651647221849',
+				'1187920201732333590',
 			);
 			const welcomeCanva = await createCanvas(member);
 			welcomeChannel.send({ files: [welcomeCanva] });

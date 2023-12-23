@@ -8,7 +8,6 @@ const {
 const ms = require('ms');
 
 module.exports = {
-	Cooldown: ms('1m'),
 	data: new SlashCommandBuilder()
 		.setName('kick')
 		.setDescription('Expulsa a un usuario.')
