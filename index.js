@@ -4,7 +4,6 @@ const { loadEvents } = require('./utils/loadEvents');
 const { loadCommands } = require('./utils/loadCommands');
 
 configDotenv();
-const config = require('./config.json');
 const token = process.env.TOKEN_BOT;
 
 const intents = [
@@ -20,7 +19,6 @@ const client = new Client({ intents, partials });
 module.exports = client;
 client.commands = new Collection();
 client.events = new Collection();
-client.emojis = config.emoji;
 client.setMaxListeners(0);
 
 require ('./distube/index');
