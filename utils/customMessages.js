@@ -4,6 +4,7 @@ const { EmbedBuilder } = require('discord.js');
  *
  * @param {string} titulo
  * @param {string} descripcion
+ * @param {string} [footer='']
  * @returns {EmbedBuilder} - Objeto que contiene el mensaje embed.
  */
 function messageInfo(titulo, descripcion) {
@@ -74,4 +75,21 @@ function messageSuccess(titulo, descripcion) {
 		.setThumbnail('https://cdn-icons-png.flaticon.com/512/1828/1828644.png');
 }
 
-module.exports = { messageInfo, messageWarning, messageError, messagePermission, messageSuccess };
+/**
+ *
+ * @param {string} titulo
+ * @param {string} descripcion
+ * @param {*} [footer={}]
+ * @returns {EmbedBuilder} - Objeto que contiene el mensaje embed.
+ */
+function messageCoupon(titulo, descripcion, footer = {}) {
+	// Devolver el mensaje embed con el archivo adjunto
+	return new EmbedBuilder()
+		.setTitle(titulo)
+		.setDescription(descripcion || '')
+		.setColor(1634703)
+		.setTimestamp(Date.now())
+		.setFooter(footer || { text: '' });
+}
+
+module.exports = { messageInfo, messageWarning, messageError, messagePermission, messageSuccess, messageCoupon };

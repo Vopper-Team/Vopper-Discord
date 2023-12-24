@@ -11,7 +11,7 @@ module.exports = {
 	 */
 	async execute(client) {
 		console.log(`${client.user.username} está activo.`);
-		client.user.setActivity({ name: 'Hiram.dev', type: ActivityType.Watching, url: 'https://www.tiktok.com/@hiram.dev?_t=8iLjLpdtSpZ&_r=1' });
+		client.user.setActivity({ name: 'Chambeando', state: 'Chambeando', type: ActivityType.Custom });
 	},
 };
 
