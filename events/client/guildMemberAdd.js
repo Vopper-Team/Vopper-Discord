@@ -35,9 +35,7 @@ async function createCanvas(member) {
 	// Crear un lienzo (canvas) con dimensiones 700x250
 	const canvas = Canvas.createCanvas(800, 350);
 	const context = canvas.getContext('2d');
-	const background = await Canvas.loadImage(
-		'./assets/img/background-canvas.png',
-	);
+	const background = await Canvas.loadImage('./assets/img/background-canvas.png');
 
 	// Utilizar las dimensiones del lienzo para estirar la imagen sobre todo el lienzo
 	context.drawImage(background, 0, 0, canvas.width, canvas.height);
@@ -46,38 +44,24 @@ async function createCanvas(member) {
 	context.font = applyText(canvas, `${member.displayName}`);
 	context.fillStyle = '#ffffff';
 	const textWidth = context.measureText(`${member.displayName}`).width;
-	context.fillText(
-		`${member.displayName}`,
-		(canvas.width - textWidth) / 2,
-		canvas.height - 100,
-	);
+	context.fillText(`${member.displayName}`, (canvas.width - textWidth) / 2, canvas.height - 100);
 
 	// Agregar un mensaje de bienvenida
 	context.font = '24px Geist Mono Regular';
 	context.fillStyle = '#ffffff';
 	const welcomeText = '¡Bienvenido a Vopper!';
 	const welcomeTextWidth = context.measureText(welcomeText).width;
-	context.fillText(
-		welcomeText,
-		(canvas.width - welcomeTextWidth) / 2,
-		canvas.height - 65,
-	);
+	context.fillText(welcomeText, (canvas.width - welcomeTextWidth) / 2, canvas.height - 65);
 
 	// Agregar un mensaje "Es un placer tenerte aquí"
 	context.font = '18px Geist Mono Regular';
 	context.fillStyle = '#ffffff';
 	const pleasureText = '¡Es un placer tenerte aquí!';
 	const pleasureTextWidth = context.measureText(pleasureText).width;
-	context.fillText(
-		pleasureText,
-		(canvas.width - pleasureTextWidth) / 2,
-		canvas.height - 35,
-	);
+	context.fillText(pleasureText, (canvas.width - pleasureTextWidth) / 2, canvas.height - 35);
 
 	// Usar undici para hacer solicitudes HTTP para un mejor rendimiento
-	const { body } = await request(
-		member.user.displayAvatarURL({ format: 'jpg', size: 512 }),
-	);
+	const { body } = await request(member.user.displayAvatarURL({ format: 'jpg', size: 512 }));
 
 	// Dibujar la imagen del avatar en el lienzo principal
 	const avatar = await Canvas.loadImage(await body.arrayBuffer());
@@ -101,9 +85,7 @@ module.exports = {
 	async execute(member) {
 		if (!member.user) return;
 		if (member.guild.channels.cache.has('1187920201732333590')) {
-			const welcomeChannel = member.guild.channels.cache.get(
-				'1187920201732333590',
-			);
+			const welcomeChannel = member.guild.channels.cache.get('1187920201732333590');
 			const welcomeCanva = await createCanvas(member);
 			welcomeChannel.send({ files: [welcomeCanva] });
 		}
