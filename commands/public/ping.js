@@ -3,7 +3,7 @@ const { SlashCommandBuilder, ChatInputCommandInteraction, Client } = require('di
 const ms = require('ms');
 
 module.exports = {
-	Cooldown: ms('1m'),
+	Cooldown: ms('10s'),
 	data: new SlashCommandBuilder().setName('ping').setDescription('pog'),
 	/**
    * @param {Client} client
