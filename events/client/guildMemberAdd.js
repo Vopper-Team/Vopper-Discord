@@ -24,11 +24,11 @@ const applyText = (canvas, text) => {
 	do {
 		try {
 			// Utilizar la fuente personalizada
-			context.font = `${(fontSize -= 10)}px 'Geist Mono Regular', sans-serif`;
+			context.font = `${ (fontSize -= 10) }px 'Geist Mono Regular', sans-serif`;
 		}
 		catch (error) {
 			// En caso de error, utilizar una fuente genérica
-			context.font = `${(fontSize -= 10)}px sans-serif`;
+			context.font = `${ (fontSize -= 10) }px sans-serif`;
 		}
 	} while (context.measureText(text).width > canvas.width - 300);
 
@@ -54,10 +54,10 @@ async function createCanvas(member) {
 	loadCustomFont();
 
 	// Agregar el nombre del usuario y un mensaje de bienvenida
-	context.font = applyText(canvas, `${member.displayName}`);
+	context.font = applyText(canvas, `${ member.displayName }`);
 	context.fillStyle = '#ffffff';
-	const textWidth = context.measureText(`${member.displayName}`).width;
-	context.fillText(`${member.displayName}`, (canvas.width - textWidth) / 2, canvas.height - 100);
+	const textWidth = context.measureText(`${ member.displayName }`).width;
+	context.fillText(`${ member.displayName }`, (canvas.width - textWidth) / 2, canvas.height - 100);
 
 	// Agregar un mensaje de bienvenida
 	context.font = '24px Geist Mono Regular';

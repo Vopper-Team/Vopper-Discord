@@ -59,7 +59,7 @@ module.exports = {
 
 			if (interaction && interaction.followUp) {
 				await interaction.followUp({
-					content: `Se produjo un error: ${error.message}`,
+					content: `Se produjo un error: ${ error.message }`,
 					ephemeral: true,
 				});
 			}

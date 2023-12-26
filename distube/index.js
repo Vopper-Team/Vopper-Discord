@@ -30,7 +30,7 @@ client.distube = new DisTube(client, {
 // }
 
 const obtenerEstado = (cola) =>
-	`Volumen: \`${cola.volume}%\` | Filtro: \`${cola.filters.names.join(', ') || 'Apagado'}\` | Repetir: \`${cola.repeatMode ? (cola.repeatMode === 2 ? 'Lista' : 'Canción') : 'Apagado'}\` | Autoplay: \`${cola.autoplay ? 'Activado' : 'Desactivado'}\``;
+	`Volumen: \`${ cola.volume }%\` | Filtro: \`${ cola.filters.names.join(', ') || 'Apagado' }\` | Repetir: \`${ cola.repeatMode ? (cola.repeatMode === 2 ? 'Lista' : 'Canción') : 'Apagado' }\` | Autoplay: \`${ cola.autoplay ? 'Activado' : 'Desactivado' }\``;
 
 client.distube.on('addSong', async (cola, cancion) => {
 	const mensaje = await cola.textChannel.send({
@@ -41,35 +41,35 @@ client.distube.on('addSong', async (cola, cancion) => {
 					name: 'Añadiste una canción a la cola',
 					iconURL: client.user.avatarURL(),
 				})
-				.setDescription(`> [**${cancion.name}**](${cancion.url})`)
+				.setDescription(`> [**${ cancion.name }**](${ cancion.url })`)
 				.setThumbnail(cancion.user.displayAvatarURL())
 				.addFields([
 					{
 						name: '⏱️ | Duración',
-						value: `${cancion.formattedDuration}`,
+						value: `${ cancion.formattedDuration }`,
 						inline: true,
 					},
 					{
 						name: '🎵 | Subido por',
-						value: `[${cancion.uploader.name}](${cancion.uploader.url})`,
+						value: `[${ cancion.uploader.name }](${ cancion.uploader.url })`,
 						inline: true,
 					},
 					{
 						name: '👌 | Solicitada por',
-						value: `${cancion.user}`,
+						value: `${ cancion.user }`,
 						inline: true,
 					},
 				])
 				.setImage(cancion.thumbnail)
 				.setFooter({
-					text: `${Format.format(cola.songs.length)} canciones en cola`,
+					text: `${ Format.format(cola.songs.length) } canciones en cola`,
 				}),
 		],
 	});
 
 	setTimeout(() => {
 		mensaje.delete();
-	}, 20000);
+	}, 8000);
 });
 
 client.distube.on('addList', async (cola, listaReproduccion) => {
@@ -82,22 +82,22 @@ client.distube.on('addList', async (cola, listaReproduccion) => {
 					iconURL: client.user.avatarURL(),
 				})
 				.setThumbnail(listaReproduccion.user.displayAvatarURL())
-				.setDescription(`> [**${listaReproduccion.name}**](${listaReproduccion.url})`)
+				.setDescription(`> [**${ listaReproduccion.name }**](${ listaReproduccion.url })`)
 				.addFields([
 					{
 						name: '⏱️ | Duración',
-						value: `${listaReproduccion.formattedDuration}`,
+						value: `${ listaReproduccion.formattedDuration }`,
 						inline: true,
 					},
 					{
 						name: '👌 | Solicitada por',
-						value: `${listaReproduccion.user}`,
+						value: `${ listaReproduccion.user }`,
 						inline: true,
 					},
 				])
 				.setImage(listaReproduccion.thumbnail)
 				.setFooter({
-					text: `${Format.format(cola.songs.length)} canciones en cola`,
+					text: `${ Format.format(cola.songs.length) } canciones en cola`,
 				}),
 		],
 	});
@@ -116,36 +116,36 @@ client.distube.on('playSong', async (cola, cancion) => {
 					name: 'Reproduciendo ahora',
 					iconURL: client.user.avatarURL(),
 				})
-				.setDescription(`> [**${cancion.name}**](${cancion.url})`)
+				.setDescription(`> [**${ cancion.name }**](${ cancion.url })`)
 				.setThumbnail(cancion.user.displayAvatarURL())
 				.addFields([
 					{
 						name: '🔷 | Estado',
-						value: `${obtenerEstado(cola).toString()}`,
+						value: `${ obtenerEstado(cola).toString() }`,
 						inline: false,
 					},
 					{
 						name: '⏱️ | Duración',
-						value: `${cancion.formattedDuration}`,
+						value: `${ cancion.formattedDuration }`,
 						inline: true,
 					},
 
 					{
 						name: '👌 | Solicitada por',
-						value: `${cancion.user}`,
+						value: `${ cancion.user }`,
 						inline: true,
 					},
 					{
 						name: '📻 | Reproducir música en',
 						value: `
-                                ┕🔊 | ${client.channels.cache.get(cola.voiceChannel.id)}
-                                ┕🪄 | ${cola.voiceChannel.bitrate / 1000} kbps`,
+                                ┕🔊 | ${ client.channels.cache.get(cola.voiceChannel.id) }
+                                ┕🪄 | ${ cola.voiceChannel.bitrate / 1000 } kbps`,
 						inline: false,
 					},
 				])
 				.setImage(cancion.thumbnail)
 				.setFooter({
-					text: `${Format.format(cola.songs.length)} canciones en cola`,
+					text: `${ Format.format(cola.songs.length) } canciones en cola`,
 				}),
 		],
 	});
@@ -176,9 +176,9 @@ client.distube.on('error', async (canal, error) => {
 			new EmbedBuilder()
 				.setColor('Red')
 				.setDescription(
-					`🚫 | ¡Se ha producido un error!\n\n** ${error
+					`🚫 | ¡Se ha producido un error!\n\n** ${ error
 						.toString()
-						.slice(0, 1974)}**`,
+						.slice(0, 1974) }**`,
 				),
 		],
 	});
