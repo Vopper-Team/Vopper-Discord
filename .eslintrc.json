@@ -1,50 +1,121 @@
 {
 	"extends": "eslint:recommended",
 	"env": {
-		"node": true,
-		"es6": true
+	  "node": true,
+	  "es6": true
 	},
 	"parserOptions": {
-		"ecmaVersion": 2021,
-		"sourceType": "module"
+	  "ecmaVersion": 2021,
+	  "sourceType": "module"
 	},
 	"rules": {
-		"arrow-spacing": ["warn", { "before": true, "after": true }],
-		"brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
-		"comma-dangle": ["error", "always-multiline"],
-		"comma-spacing": "error",
-		"comma-style": "error",
-		"curly": ["error", "multi-line", "consistent"],
-		"dot-location": ["error", "property"],
-		"handle-callback-err": "off",
-		"indent": ["error", "tab"],
-		"keyword-spacing": "error",
-		"max-nested-callbacks": ["error", { "max": 4 }],
-		"max-statements-per-line": ["error", { "max": 2 }],
-		"no-console": "off",
-		"no-empty-function": "error",
-		"no-floating-decimal": "error",
-		"no-inline-comments": "error",
-		"no-lonely-if": "error",
-		"no-multi-spaces": "error",
-		"no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 1, "maxBOF": 0 }],
-		"no-shadow": ["error", { "allow": ["err", "resolve", "reject"] }],
-		"no-trailing-spaces": ["error"],
-		"no-var": "error",
-		"object-curly-spacing": ["error", "always"],
-		"prefer-const": "error",
-		"quotes": ["error", "single"],
-		"semi": ["error", "always"],
-		"space-before-blocks": "error",
-		"space-before-function-paren": ["error", {
-			"anonymous": "never",
-			"named": "never",
-			"asyncArrow": "always"
-		}],
-		"space-in-parens": "error",
-		"space-infix-ops": "error",
-		"space-unary-ops": "error",
-		"spaced-comment": "error",
-		"yoda": "error"
+	  // Estilo de flechas
+	  "arrow-spacing": ["warn", { "before": true, "after": true }],
+  
+	  // Estilo de llaves en funciones y bloques
+	  "brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
+  
+	  // Coma al final en objetos y arreglos multilinea
+	  "comma-dangle": ["error", "always-multiline"],
+	  
+	  // Espaciado alrededor de las comas
+	  "comma-spacing": ["error", { "before": false, "after": true }],
+	  
+	  // Estilo de comas
+	  "comma-style": ["error", "last"],
+  
+	  // Uso consistente de llaves en bloques
+	  "curly": ["error", "multi-line", "consistent"],
+	  
+	  // Ubicación de puntos en propiedades
+	  "dot-location": ["error", "property"],
+	  
+	  // Desactivar manejo explícito de errores
+	  "handle-callback-err": "off",
+	  
+	  // Indentación con tabs
+	  "indent": ["error", "tab"],
+	  
+	  // Espaciado alrededor de palabras clave
+	  "keyword-spacing": "error",
+	  
+	  // Máximo anidamiento de funciones callback
+	  "max-nested-callbacks": ["error", { "max": 4 }],
+	  
+	  // Máximo de declaraciones por línea
+	  "max-statements-per-line": ["error", { "max": 2 }],
+	  
+	  // Desactivar regla de consola
+	  "no-console": "off",
+	  
+	  // No funciones vacías
+	  "no-empty-function": "error",
+	  
+	  // No usar punto flotante sin dígitos decimales
+	  "no-floating-decimal": "error",
+	  
+	  // No usar comentarios en línea
+	  "no-inline-comments": "off",
+	  
+	  // No if solitarios
+	  "no-lonely-if": "error",
+	  
+	  // No múltiples espacios
+	  "no-multi-spaces": "error",
+	  
+	  // No múltiples líneas vacías
+	  "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 1, "maxBOF": 0 }],
+	  
+	  // No sombrear variables
+	  "no-shadow": ["error", { "allow": ["err", "resolve", "reject"] }],
+	  
+	  // No espacios al final de línea
+	  "no-trailing-spaces": ["error"],
+	  
+	  // No usar var
+	  "no-var": "error",
+	  
+	  // Espaciado en objetos
+	  "object-curly-spacing": ["error", "always"],
+	  
+	  // Preferir const
+	  "prefer-const": "error",
+	  
+	  // Uso consistente de comillas
+	  "quotes": ["error", "single"],
+	  
+	  // Punto y coma al final de cada sentencia
+	  "semi": ["error", "always"],
+	  
+	  // Espaciado antes de bloques
+	  "space-before-blocks": "error",
+	  
+	  // Espaciado antes de paréntesis de función
+	  "space-before-function-paren": ["error", { "anonymous": "never", "named": "never", "asyncArrow": "always" }],
+	  
+	  // Espaciado dentro de paréntesis
+	  "space-in-parens": "error",
+	  
+	  // Espaciado alrededor de operadores
+	  "space-infix-ops": "error",
+	  
+	  // Espaciado en operadores unarios
+	  "space-unary-ops": "error",
+	  
+	  // Espaciado en comentarios
+	  "spaced-comment": "error",
+	  
+	  // Espaciado en plantillas de cadena
+	  "template-curly-spacing": ["error", "always"],
+	  
+	  // Desactivar Yoda condition
+	  "yoda": "off",
+	  
+	  // No bloques de código acolchados
+	  "padded-blocks": ["error", "never"],
+	  
+	  // No mezclar espacios y tabs
+	  "no-mixed-spaces-and-tabs": "error"
 	}
-}
+  }
+  

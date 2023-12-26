@@ -2,8 +2,8 @@ const { configDotenv } = require('dotenv');
 const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js');
 const { loadEvents } = require('./utils/loadEvents');
 const { loadCommands } = require('./utils/loadCommands');
-
 configDotenv();
+const MODE_DEV = process.env.MODE_DEV === 'true';
 const token = process.env.TOKEN_BOT;
 
 const intents = [
@@ -38,3 +38,5 @@ client.login(token)
 	.catch((error) => {
 		console.error(error);
 	});
+
+module.exports = MODE_DEV;
