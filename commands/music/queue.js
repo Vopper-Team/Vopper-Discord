@@ -51,9 +51,7 @@ module.exports = {
 
 		const songs = queue.songs.length;
 		const nextSongs =
-            songs > 10
-            	? `Y **${ songs - 10 }** canciones más...`
-            	: `Lista de reproducción con **${ songs }** canciones...`;
+            songs > 10 ? `Y **${ songs - 10 }** canciones más...` : `Lista de reproducción con **${ songs }** canciones...`;
 
 		interaction.reply({
 			embeds: [
