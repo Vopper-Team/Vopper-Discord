@@ -1,8 +1,7 @@
-const { configDotenv } = require('dotenv');
+require('dotenv').config();
 const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js');
 const { loadEvents } = require('./utils/loadEvents');
 const { loadCommands } = require('./utils/loadCommands');
-configDotenv();
 const MODE_DEV = process.env.MODE_DEV === 'true';
 const token = process.env.TOKEN_BOT;
 
@@ -21,7 +20,6 @@ client.commands = new Collection();
 client.events = new Collection();
 client.setMaxListeners(0);
 
-require ('./distube/index');
 // anticrash
 process.on('unhandledRejection', (reason, p) => {
 	console.log(reason, p);

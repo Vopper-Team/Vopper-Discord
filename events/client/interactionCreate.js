@@ -15,19 +15,19 @@ module.exports = {
 		const command = client.commands.get(interaction.commandName);
 
 		if (command) {
-			const cooldownData = cooldowns.get(`${interaction.user.id}-${command.name}`);
+			const cooldownData = cooldowns.get(`${ interaction.user.id }-${ command.name }`);
 
 			if (cooldownData && cooldownData.timeout > Date.now()) {
 				const timeLeft = Math.ceil((cooldownData.timeout - Date.now()) / 1000);
 				return interaction.reply({
-					content: `Este comando tiene un tiempo de espera. Tienes que esperar ${timeLeft} segundos para volver a usar`,
+					content: `Este comando tiene un tiempo de espera. Tienes que esperar ${ timeLeft } segundos para volver a usar`,
 					ephemeral: true,
 				});
 			}
 
 			// Configurar el cooldown
 			const cooldownTime = command.Cooldown || 0;
-			cooldowns.set(`${interaction.user.id}-${command.name}`, {
+			cooldowns.set(`${ interaction.user.id }-${ command.name }`, {
 				timeout: Date.now() + cooldownTime,
 			});
 
