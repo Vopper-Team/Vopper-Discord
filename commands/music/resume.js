@@ -3,8 +3,8 @@ const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 module.exports = {
 	category: 'Música',
 	data: new SlashCommandBuilder()
-		.setName('pausar')
-		.setDescription('¡Pausa la canción actual!'),
+		.setName('continuar')
+		.setDescription('¡Continuar reproducción!'),
 
 	async execute(interaction, client) {
 		const voiceChannel = interaction.member.voice.channel;
@@ -34,31 +34,17 @@ module.exports = {
 			});
 		}
 
-		try {
-			queue.pause();
-		}
-		catch (error) {
-			await interaction.reply({
-				embeds: [
-					new EmbedBuilder()
-						.setColor('Default')
-						.setAuthor({
-							name: 'Upp',
-							iconURL: client.user.displayAvatarURL(),
-						})
-						.setDescription('⏸️ | ¡La musica esta pausada!'),
-				],
-			});
-		}
+
+		queue.resume();
 		await interaction.reply({
 			embeds: [
 				new EmbedBuilder()
 					.setColor('Default')
 					.setAuthor({
-						name: 'Pausar',
+						name: 'Continuar',
 						iconURL: client.user.displayAvatarURL(),
 					})
-					.setDescription('⏸️ | ¡Pausar reproducción de la canción actual!'),
+					.setDescription('⏯️ | ¡Continuar reproducción de la canción actual!'),
 			],
 		});
 	},

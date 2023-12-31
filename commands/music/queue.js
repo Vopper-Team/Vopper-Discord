@@ -34,7 +34,7 @@ module.exports = {
 			});
 		}
 
-		const q = queue.songs
+		queue.songs
 			.map(
 				(song, i) =>
 					`${ i === 0 ? 'Reproduciendo:' : `${ i }.` } ${ song.name } - \`${

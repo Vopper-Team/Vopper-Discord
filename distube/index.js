@@ -17,8 +17,8 @@ client.distube = new DisTube(client, {
 	emitNewSongOnly: true,
 	emitAddSongWhenCreatingQueue: true,
 	emitAddListWhenCreatingQueue: true,
-	// youtubeDL: false,
-	// youtubeCookie: client.config.cookie,
+	//youtubeDL: true,
+	//youtubeCookie: client.config.cookie,
 	plugins: [new SpotifyPlugin(spotifyOptions), new SoundCloudPlugin()],
 });
 
