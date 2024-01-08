@@ -17,6 +17,8 @@ const intents = [
 const partials = [Partials];
 const client = new Client({ intents, partials });
 module.exports = client;
+client.buttons = new Collection();
+client.menus = new Collection();
 client.commands = new Collection();
 client.events = new Collection();
 client.setMaxListeners(0);
