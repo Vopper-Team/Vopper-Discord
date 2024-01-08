@@ -36,7 +36,7 @@ module.exports = {
           interaction.fields.getTextInputValue("descriptionInput");
         const type = interaction.fields.getTextInputValue("typeInput");
         const lenguage = interaction.fields.getTextInputValue("lenguageInput");
-        const channelColabId = "1186870483489144844";
+        const channelColabId = "1193754035837222922";
         const channel = interaction.guild.channels.cache.get(channelColabId);
 
         const embed = new EmbedBuilder()
