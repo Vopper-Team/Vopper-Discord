@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const { EmbedBuilder, SlashCommandBuilder, ChatInputCommandInteraction } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -45,19 +45,20 @@ module.exports = {
 		.addStringOption(option => option.setName('url').setDescription('Ingresa el link').setRequired(false))
 		.addStringOption(option =>
 			option.setName('descripción').setDescription('Agrega el texto que quieras que salga en el mensaje'),
-		),
+		).setDefaultMemberPermissions(PermissionFlagsBits.Administrator,PermissionFlagsBits.ManageMessages, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.SendMessages),
 	/**
    *
    * @param {ChatInputCommandInteraction} interaction
    */
 	async execute(interaction) {
-		const { options } = interaction;
+		const { options, guild } = interaction;
 		const color = options.getString('color');
 		const titulo = options.getString('título');
 		const url = options.getString('url');
 		const descripcion = options.getString('descripción');
 
 		const embed = new EmbedBuilder();
+		embed.setAuthor({iconURL: `${ guild.iconURL({ dynamic: true }) }`})
 		if (color === 'Default') {
 			embed.setColor(color);
 		}
