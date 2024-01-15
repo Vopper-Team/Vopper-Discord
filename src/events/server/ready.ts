@@ -1,18 +1,16 @@
 /* eslint-disable no-unused-vars */
-const { ActivityType, Client } = require('discord.js');
-const path = require('path');
-const colors = require('colors');
+import { ActivityType, Client } from 'discord.js';
+import path from 'path';
+import colors from 'colors';
+import CustomClient from '../../interfaces/CustomClient';
 const MODE_DEV = require(path.join(process.cwd(), '/index.js'));
 
 // ready.js
 module.exports = {
 	name: 'ready',
 	once: true,
-	/**
-   *
-   * @param {Client} client
-   */
-	async execute(client) {
+
+	async execute(client: CustomClient) {
 		console.log(`${ client.user.username } está activo.`);
 
 		if (MODE_DEV == true) {
