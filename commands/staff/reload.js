@@ -39,7 +39,7 @@ module.exports = {
 		}
 		else {
 			// Recargar todos los comandos
-			await loadCommands(client);
+			loadCommands(client);
 			replyMessage = '¡Todos los comandos han sido recargados!';
 		}
 
