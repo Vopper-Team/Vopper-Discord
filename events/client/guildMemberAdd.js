@@ -9,7 +9,6 @@ const path = require('path');
 const loadCustomFont = () => {
 	try {
 		GlobalFonts.registerFromPath(path.join(process.cwd(), '/assets/fonts/GeistMono-Regular.otf'), 'Geist Mono Regular');
-		console.log('Fuente cargada con éxito.');
 	}
 	catch (error) {
 		console.error('Error al cargar la fuente:', error);

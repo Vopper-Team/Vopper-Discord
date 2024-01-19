@@ -1,122 +1,123 @@
-/* eslint-disable no-unused-vars */
-// eslint-disable-next-line no-unused-vars
 const {
-	SlashCommandBuilder,
-	ChatInputCommandInteraction,
-	PermissionFlagsBits,
-} = require('discord.js');
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+  PermissionFlagsBits,
+} = require("discord.js");
 
-const path = require('path');
+const path = require("path");
+const { config } = require("../..");
 const {
-	messageInfo,
-	messageError,
-	messagePermission,
-	messageSuccess,
-} = require(path.join(process.cwd(), '/utils/customMessages.js'));
+  messageInfo,
+  messageError,
+  messagePermission,
+  messageSuccess,
+} = require(path.join(process.cwd(), "/utils/customMessages.js"));
 
 module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('kick')
-		.setDescription('Expulsa a un usuario.')
-		.addUserOption((option) =>
-			option
-				.setName('usuario')
-				.setDescription('El usuario que quieras expulsar.')
-				.setRequired(true),
-		)
-		.addStringOption((option) =>
-			option
-				.setName('razón')
-				.setDescription('Razón de la expulsión.')
-				.setRequired(false),
-		),
-	/**
-   * @param {ChatInputCommandInteraction} interaction
+  // Slash command configuration
+  data: new SlashCommandBuilder()
+    .setName("kick")
+    .setDescription("Kick a user.")
+    .addUserOption((option) =>
+      option
+        .setName("user")
+        .setDescription("The user you want to kick.")
+        .setRequired(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("reason")
+        .setDescription("Reason for the kick.")
+        .setRequired(false)
+    ),
+
+  /**
+   * Execute function for the "kick" command.
+   * @param {ChatInputCommandInteraction} interaction - The interaction object representing the user's command input.
    */
-	async execute(interaction) {
-		const userKick = interaction.options.getUser('usuario');
-		const reasonKick = interaction.options.getString('razón') || '';
-		const member = interaction.guild.members.cache.get(interaction.user.id);
+  async execute(interaction) {
+    const userKick = interaction.options.getUser("user");
+    const reasonKick = interaction.options.getString("reason") || "";
+    const member = interaction.guild.members.cache.get(interaction.user.id);
 
-		// Obtener el miembro del servidor que se va a expulsar
-		const memberToKick = interaction.guild.members.cache.get(userKick.id);
+    // Get the member from the server to be kicked
+    const memberToKick = interaction.guild.members.cache.get(userKick.id);
 
-		// Canal de log
-		const canalDestinoId = '1187903184207880333';
-		const canalDestino = interaction.guild.channels.cache.get(canalDestinoId);
-		// Verificar permisos para expulsar a usuarios
-		if (!member.permissions.has(PermissionFlagsBits.KickMembers)) {
-			return await interaction.reply({
-				embeds: [
-					messagePermission(
-						'No tienes permisos!',
-						'No tienes permisos para utilizar este comando!',
-					),
-				],
-				ephemeral: true,
-			});
-		}
+    // Log channel
+    const logChannelId = config.channels.logs;
+    const logChannel = interaction.guild.channels.cache.get(logChannelId);
 
-		// Verificar si se proporcionó un usuario a expulsar
-		if (!userKick) {
-			return await interaction.reply({
-				embeds: [
-					messageInfo(
-						'Te falta algo!',
-						'Debes mencionar al usuario que quieres expulsar.',
-					),
-				],
-				ephemeral: true,
-			});
-		}
+    // Check permissions to kick users
+    if (!member.permissions.has(PermissionFlagsBits.KickMembers)) {
+      return await interaction.reply({
+        embeds: [
+          messagePermission(
+            "Insufficient Permissions!",
+            "You do not have permission to use this command!"
+          ),
+        ],
+        ephemeral: true,
+      });
+    }
 
-		// Verificar si el usuario tiene permisos para ser expulsado
-		if (
-			!memberToKick ||
+    // Check if a user to kick was provided
+    if (!userKick) {
+      return await interaction.reply({
+        embeds: [
+          messageInfo(
+            "Incomplete Information!",
+            "You must mention the user you want to kick."
+          ),
+        ],
+        ephemeral: true,
+      });
+    }
+
+    // Check if the user has permissions to be kicked
+    if (
+      !memberToKick ||
       memberToKick.permissions.has(PermissionFlagsBits.KickMembers)
-		) {
-			return await interaction.reply({
-				embeds: [messageError('ERROR!', 'No puedes expulsar a este usuario.')],
-				ephemeral: true,
-			});
-		}
+    ) {
+      return await interaction.reply({
+        embeds: [messageError("ERROR!", "You cannot kick this user.")],
+        ephemeral: true,
+      });
+    }
 
-		const muteMessage = reasonKick
-			? `Se ha expulsado el usuario ${ userKick.tag }\nRazón: **${ reasonKick }*.`
-			: `Se ha expulsado al usuario ${ userKick.tag }.`;
+    const kickMessage = reasonKick
+      ? `User ${userKick.tag} has been kicked.\nReason: **${reasonKick}**.`
+      : `User ${userKick.tag} has been kicked.`;
 
-		// Expulsar al usuario
-		try {
-			await memberToKick.kick();
-			await interaction
-				.reply({
-					embeds: [messageSuccess('Haz expulsado a un usuario', muteMessage)],
-					ephemeral: true,
-				})
-				.then((mensaje) => {
-					setTimeout(() => {
-						mensaje.delete();
-					}, 5000);
-				});
+    // Kick the user
+    try {
+      await memberToKick.kick();
+      await interaction
+        .reply({
+          embeds: [messageSuccess("You kicked a user", kickMessage)],
+          ephemeral: true,
+        })
+        .then((message) => {
+          setTimeout(() => {
+            message.delete();
+          }, 5000);
+        });
 
-			if (canalDestino) {
-				const logMessage = reasonKick
-					? `${ userKick.tag } ha sido expulsado por ${ interaction.member.displayName }. \nRazón: **${ reasonKick }**`
-					: `${ userKick.tag } ha sido expulsado por ${ interaction.member.displayName }`;
-				// Envía el mensaje al canal de destino
-				await canalDestino.send({
-					embeds: [messageInfo('¡Se ha expulsado un usuario!', logMessage)],
-				});
-			}
-			else {
-				console.error('No se pudo encontrar el canal de destino.');
-			}
-		}
-		catch (error) {
-			return await interaction.reply({
-				content: `${ error.message }`,
-				ephemeral: true,
-			});
-		}
-	},
+      if (logChannel) {
+        const logMessage = reasonKick
+          ? `${userKick.tag} has been kicked by ${interaction.member.displayName}.\nReason: **${reasonKick}**`
+          : `${userKick.tag} has been kicked by ${interaction.member.displayName}`;
+        // Send the log message to the destination channel
+        await logChannel.send({
+          embeds: [messageInfo("User Kicked!", logMessage)],
+        });
+      } else {
+        console.error("Destination channel not found.");
+      }
+    } catch (error) {
+      return await interaction.reply({
+        content: `${error.message}`,
+        ephemeral: true,
+      });
+    }
+  },
 };
