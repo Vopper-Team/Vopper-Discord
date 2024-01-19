@@ -1,0 +1,10 @@
+{
+  "channels": {
+    "logs": "channelId",
+    "suggestions": "channelId",
+    "coupons": "channelId"
+  },
+  "roles": {
+    "muted": "roleId"
+  }
+}

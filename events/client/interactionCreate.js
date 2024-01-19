@@ -1,119 +1,152 @@
-// eslint-disable-next-line no-unused-vars
-const {
-  Client,
-  Interaction,
-  ChatInputCommandInteraction,
-  ModalSubmitInteraction,
-  ModalSubmitFields,
-  GuildChannelManager,
-  EmbedBuilder,
-} = require("discord.js");
+const { Client, Interaction, EmbedBuilder } = require("discord.js");
+// Map to store command cooldowns
 const cooldowns = new Map();
 
 module.exports = {
+  // Event name for when an interaction is created
   name: "interactionCreate",
+  // Whether the event should only be executed once
   once: false,
+
   /**
-   * @param {Interaction} interaction
-   * @param {Client} client
+   * Handles the interaction creation event.
+   * @param {Interaction} interaction - The Discord interaction object.
+   * @param {Client} client - The Discord client instance.
    */
   async execute(interaction, client) {
+    // Check if the interaction is relevant for processing (guild, channel, and type check)
     if (
       !interaction.guild ||
       !interaction.channel ||
-      !(interaction.isChatInputCommand || interaction.isModalSubmit)
+      !isValidInteractionType(interaction)
     ) {
       return;
     }
 
-    if (interaction.isModalSubmit) {
-      // Manejar la interacción del modal submit directamente
-      // Puedes colocar la lógica específica del modal submit aquí
-      if (interaction.customId === "mProyecto") {
-        // Get the data entered by the user
-        const title = interaction.fields.getTextInputValue("titleInput");
-        const description =
-          interaction.fields.getTextInputValue("descriptionInput");
-        const type = interaction.fields.getTextInputValue("typeInput");
-        const lenguage = interaction.fields.getTextInputValue("lenguageInput");
-        const channelColabId = "1193754035837222922";
-        const channel = interaction.guild.channels.cache.get(channelColabId);
-
-        const embed = new EmbedBuilder()
-          .setTitle(title)
-          .setDescription(description)
-		  .setColor("Green")
-          .setAuthor({
-            name: "Vopper Community",
-            iconURL: `${client.user.avatarURL()}`,
-          })
-          .addFields(
-            {
-              name: "Lenguajes a utilizar",
-              value: `${lenguage}`,
-              inline: false,
-            },
-            { name: "Contactos", value: `${type}`, inline: false }
-          )
-          .setFooter({
-            text: `Enviado por: ${interaction.user.tag}`,
-            iconURL: `${interaction.user.avatarURL()}`,
-          });
-        try {
-          await channel.send({
-            embeds: [embed],
-            fetchReply: true,
-          });
-          interaction.reply({
-            content: "Tu envío fue recibido exitosamente!",
-            ephemeral: true, // Hacer la respuesta visible solo para el usuario
-          });
-        } catch (error) {
-          console.error(error);
-          interaction.reply({
-            content:
-              "Ocurrió un error al procesar tu anuncio. Por favor, intenta nuevamente más tarde.",
-            ephemeral: true,
-          });
-        }
-      }
+    // Handling modal submit interaction separately
+    if (interaction.isModalSubmit && interaction.customId === "mProyecto") {
+      handleModalSubmit(interaction, client);
+      return;
     }
 
+    // Check if the interaction corresponds to a registered command
     const command = client.commands.get(interaction.commandName);
 
     if (command) {
-      const cooldownData = cooldowns.get(
-        `${interaction.user.id}-${command.name}`
-      );
-
-      if (cooldownData && cooldownData.timeout > Date.now()) {
-        const timeLeft = Math.ceil((cooldownData.timeout - Date.now()) / 1000);
-        return interaction.reply({
-          content: `Este comando tiene un tiempo de espera. Tienes que esperar ${timeLeft} segundos para volver a usar`,
-          ephemeral: true,
-        });
-      }
-
-      // Configurar el cooldown
-      const cooldownTime = command.Cooldown || 0;
-      cooldowns.set(`${interaction.user.id}-${command.name}`, {
-        timeout: Date.now() + cooldownTime,
-      });
-
-      try {
-        await command.execute(interaction, client);
-      } catch (error) {
-        console.error("Error al ejecutar el comando:", error);
-        return interaction.reply({
-          content: "Ocurrió un error al tratar de realizar este comando",
-          ephemeral: true,
-        });
-      }
+      handleCommandInteraction(command, interaction, client);
     } else {
-      return interaction.reply({
-        content: "Comando no válido",
-        ephemeral: true,
-      });
+      // Respond to the user if the command is not valid
+      invalidCommandResponse(interaction);
     }
   },
 };
+
+/**
+ * Checks if the interaction type is valid for processing.
+ * @param {Interaction} interaction - The Discord interaction object.
+ * @returns {boolean} - True if the interaction type is valid, otherwise false.
+ */
+function isValidInteractionType(interaction) {
+  return interaction.isChatInputCommand || interaction.isModalSubmit;
+}
+
+/**
+ * Handles the logic for modal submit interactions.
+ * @param {Interaction} interaction - The Discord interaction object.
+ * @param {Client} client - The Discord client instance.
+ */
+async function handleModalSubmit(interaction, client) {
+  const channelColabId = "1193754035837222922";
+  const channel = interaction.guild.channels.cache.get(channelColabId);
+
+  // Get the data entered by the user
+  const title = interaction.fields.getTextInputValue("titleInput");
+  const description = interaction.fields.getTextInputValue("descriptionInput");
+  const type = interaction.fields.getTextInputValue("typeInput");
+  const language = interaction.fields.getTextInputValue("lenguageInput");
+
+  // Build an embed with the submitted data
+  const embed = new EmbedBuilder()
+    .setTitle(title)
+    .setDescription(description)
+    .setColor("GREEN") // Use uppercase for color names
+    .setAuthor({
+      name: "Vopper Community",
+      iconURL: client.user.avatarURL(),
+    })
+    .addFields(
+      { name: "Languages to use", value: language, inline: false },
+      { name: "Contacts", value: type, inline: false }
+    )
+    .setFooter({
+      text: `Submitted by: ${interaction.user.tag}`,
+      iconURL: interaction.user.avatarURL(),
+    });
+
+  try {
+    // Send the embed to the designated channel
+    await channel.send({ embeds: [embed], fetchReply: true });
+
+    // Respond to the user indicating successful submission
+    interaction.reply({
+      content: "Your submission has been received successfully!",
+      ephemeral: true, // Make the response visible only to the user
+    });
+  } catch (error) {
+    console.error(error);
+    // Handle errors and inform the user
+    interaction.reply({
+      content:
+        "An error occurred while processing your announcement. Please try again later.",
+      ephemeral: true,
+    });
+  }
+}
+
+/**
+ * Handles the logic for command interactions.
+ * @param {Object} command - The command object.
+ * @param {Interaction} interaction - The Discord interaction object.
+ * @param {Client} client The instancie bot client 
+ */
+async function handleCommandInteraction(command, interaction, client) {
+  // Check for command cooldowns
+  const cooldownData = cooldowns.get(`${interaction.user.id}-${command.name}`);
+
+  if (cooldownData && cooldownData.timeout > Date.now()) {
+    const timeLeft = Math.ceil((cooldownData.timeout - Date.now()) / 1000);
+    return interaction.reply({
+      content: `This command has a cooldown. You need to wait ${timeLeft} seconds before using it again.`,
+      ephemeral: true,
+    });
+  }
+
+  // Set up the cooldown
+  const cooldownTime = command.Cooldown || 0;
+  cooldowns.set(`${interaction.user.id}-${command.name}`, {
+    timeout: Date.now() + cooldownTime,
+  });
+
+  try {
+    // Execute the command
+    await command.execute(interaction, client);
+  } catch (error) {
+    console.error("Error executing the command:", error);
+    // Handle errors and inform the user
+    return interaction.reply({
+      content: "An error occurred while trying to execute this command",
+      ephemeral: true,
+    });
+  }
+}
+
+/**
+ * Responds to the user when the command is not valid.
+ * @param {Interaction} interaction - The Discord interaction object.
+ */
+function invalidCommandResponse(interaction) {
+  interaction.reply({
+    content: "Invalid command",
+    ephemeral: true,
+  });
+}

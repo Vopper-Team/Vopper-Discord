@@ -6,9 +6,11 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 const ms = require("ms");
+
 /**
- *
- * @param {string} username
+ * Loads GitHub account information for the given username.
+ * @param {string} username - The GitHub username.
+ * @returns {Promise<Object>} - The GitHub account information.
  */
 async function loadGithubAccount(username) {
   const response = await fetch(`https://api.github.com/users/${username}`);
@@ -17,37 +19,43 @@ async function loadGithubAccount(username) {
 }
 
 module.exports = {
+  // Command cooldown set to 5 seconds
   Cooldown: ms("5s"),
+
+  // Slash command configuration
   data: new SlashCommandBuilder()
     .setName("github")
-    .setDescription("¡Descubre el perfil GitHub de alguien! 🚀")
+    .setDescription("Discover someone's GitHub profile! 🚀")
     .addStringOption((option) =>
       option
-        .setName("usuario")
-        .setDescription(
-          "Ingresa el nombre de usuario de GitHub que te gustaría explorar"
-        )
+        .setName("username")
+        .setDescription("Enter the GitHub username you'd like to explore")
         .setRequired(true)
     ),
+
   /**
-   * @param {Client} client
-   * @param {ChatInputCommandInteraction} interaction
+   * Execute function for the "github" command.
+   * @param {Client} client - The Discord client instance.
+   * @param {ChatInputCommandInteraction} interaction - The interaction object representing the user's command input.
    */
   async execute(interaction, client) {
     const { options } = interaction;
-    const username = options.getString("usuario");
-    if (!username)
+    const username = options.getString("username");
+
+    // Check if the username is provided
+    if (!username) {
       return await interaction.reply({
-        content: "¡Ups! Parece que olvidaste ingresar un nombre de usuario.",
+        content: "Oops! It seems you forgot to enter a username.",
         ephemeral: true,
       });
+    }
 
     try {
+      // Load GitHub account information
       const githubAccount = await loadGithubAccount(username);
-      // Parsear la fecha
-      const createdAtDate = new Date(Date.parse(githubAccount.created_at));
 
-      // Formatear la fecha a un formato legible
+      // Parse and format the account creation date
+      const createdAtDate = new Date(Date.parse(githubAccount.created_at));
       const formattedDate = createdAtDate.toLocaleString("es-ES", {
         year: "numeric",
         month: "long",
@@ -57,67 +65,70 @@ module.exports = {
         second: "numeric",
         timeZoneName: "short",
       });
+
+      // Create an embed with GitHub account information
       const embed = new EmbedBuilder()
         .setAuthor({
           name: "Vopper Github",
           iconURL: `${client.user.avatarURL()}`,
         })
-        .setTitle(`Cuenta de ${githubAccount.login} :rocket:`)
+        .setTitle(`Account of ${githubAccount.login} :rocket:`)
         .setDescription(githubAccount.bio)
         .setThumbnail(githubAccount.avatar_url)
         .addFields(
           {
-            name: "Nombre :bust_in_silhouette:",
+            name: "Name :bust_in_silhouette:",
             value: `${githubAccount.name || "N/A"}`,
             inline: true,
           },
           {
-            name: "Empresa :office:",
+            name: "Company :office:",
             value: `${githubAccount.company || "N/A"}`,
             inline: true,
           },
           {
-            name: "Ubicación :round_pushpin:",
+            name: "Location :round_pushpin:",
             value: `${githubAccount.location || "N/A"}`,
             inline: true,
           },
           {
-            name: "Sitio web :globe_with_meridians:",
+            name: "Website :globe_with_meridians:",
             value: `${githubAccount.blog || "N/A"}`,
             inline: true,
           },
           {
-            name: "Repositorios públicos :file_folder:",
+            name: "Public Repositories :file_folder:",
             value: `${githubAccount.public_repos || "N/A"}`,
             inline: true,
           },
           {
-            name: "Gists públicos :page_facing_up:",
+            name: "Public Gists :page_facing_up:",
             value: `${githubAccount.public_gists || "N/A"}`,
             inline: true,
           },
           {
-            name: "Seguidores :busts_in_silhouette:",
+            name: "Followers :busts_in_silhouette:",
             value: `${githubAccount.followers || "N/A"}`,
             inline: true,
           },
           {
-            name: "Siguiendo :footprints:",
+            name: "Following :footprints:",
             value: `${githubAccount.following || "N/A"}`,
             inline: true,
           },
-          { name: "Creada en :calendar:", value: formattedDate, inline: true }
+          { name: "Created at :calendar:", value: formattedDate, inline: true }
         )
-        .setFooter({ text: `Perfil de GitHub de ${username}` })
+        .setFooter({ text: `GitHub Profile of ${username}` })
         .setURL(githubAccount.html_url)
         .setColor("#8510fb");
 
+      // Reply to the user with the embed
       return await interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.error(error);
+      // Handle errors and inform the user
       return await interaction.reply({
-        content:
-          "No se pudo obtener la información de Github para ese usuario.",
+        content: "Couldn't retrieve GitHub information for that user.",
         ephemeral: true,
       });
     }
